@@ -12,11 +12,11 @@
 #include <regex>
 using namespace std;
 
-bool ValidateUsername(string username);
-bool ValidatePassword(string password);
-bool ValidateEmail(string email);
-bool ValidateID(string id);
-bool ValidateMobile(string mobile);
+bool ValidateUsername(string& username);
+bool ValidatePassword(string& password);
+bool ValidateEmail(string& email);
+bool ValidateID(string& id);
+bool ValidateMobile(string& mobile);
 void LoadDataBase();
 vector<string>WordReader(string& line);
 void Register();
@@ -116,7 +116,13 @@ void LoadDataBase() {
 
 //Validation Functions
 
-bool ValidateUsername(string username){
+bool ValidateUsername(string& username){
+    regex validUsername("[a-zA-z\\-]+");
+
+    return regex_match(username,validUsername);
+}
+
+bool ValidatePassword(string& password){
     //Default State
     bool correct = false;
     
@@ -126,42 +132,37 @@ bool ValidateUsername(string username){
     return correct;
 }
 
-bool ValidatePassword(string password){
-    //Default State
-    bool correct = false;
+bool ValidateEmail(string& email){
     
- 
- 
- 
-    return correct;
+    regex validEmail("[^\\.]+[\\.]?[0-9A-Za-z.]*@[0-9A-Za-z]*[A-Za-z]+[0-9]*([A-Za-z0-9]+[\\-][A-Za-z0-9]+)?\\.[a-z]+");
+    
+    return regex_match(email,validEmail);
 }
 
-bool ValidateEmail(string email){
-    //Default State
-    bool correct = false;
+bool ValidateID(string& id){
     
- 
- 
- 
-    return correct;
+     regex validID("[^\\s]+");
+
+    if(regex_match(id,validID)){
+        for(User& user : users){
+            if(user.id == id){
+                cout<<"\nID already taken, please choose another one"<<endl;
+                return false;
+            }
+        }
+        return true;
+
+    } else{
+        cout<<"Invalid ID format, please try again"<<endl;
+        return false;
+    }
 }
 
-bool ValidateID(string id){
-    //Default State
-    bool correct = false;
+bool ValidateMobile(string& mobile){
     
- 
- 
-    return correct;
-}
+    regex validMobile("(01)([0]{1}([1690]))?([0]{2})?([1]{1}([142]))?([2]{1}[0278])?([0-9]{7})");
 
-bool ValidateMobile(string mobile){
-    //Default State
-    bool correct = false;
-    
- 
- 
-    return correct;
+    return regex_match(mobile,validMobile);
 }
 
 /**
@@ -194,14 +195,13 @@ void Register() {
     getline(cin, newUser.username);
 
 
-//    while(!ValidateUsername(newUser.name)){
+    while(!ValidateUsername(newUser.name)){
+        
+        cout << "\nInvalid Username Format, please try again" << endl;
+        cout << "Enter Username: ";
+        getline(cin, newUser.username);
 
-    cout << "Error Message <--Modify It" << endl;
-
-    cout << "Enter Username: ";
-    getline(cin, newUser.username);
-
-//    }
+    }
 
     cout << endl;
     cout << "Enter Password: ";
@@ -220,41 +220,37 @@ void Register() {
     cout << "Enter ID: ";
     getline(cin, newUser.id);
 
-//    while (!ValidateID(newUser.id)){
+    while (!ValidateID(newUser.id)){
 
-    cout << "Error Message <-- Modify It" << endl;
+        cout << "Enter ID: ";
 
-    cout << "Enter ID: ";
+        getline(cin, newUser.id);
 
-    getline(cin, newUser.id);
-
-//    }
+    }
 
     cout << endl;
     cout << "Enter Email: ";
     getline(cin, newUser.email);
 
-//    while (!ValidateEmail(newUser.email)){
+    while (!ValidateEmail(newUser.email)){
 
-    cout << "Error Message <-- Modify It" << endl;
+        cout << "\nInvalid Email Format, please try again" << endl;
+        cout << "Enter Email: ";
+        getline(cin, newUser.email);
 
-    cout << "Enter Email: ";
-    getline(cin, newUser.email);
-
-    //   }
+       }
 
     cout << endl;
     cout << "Enter Mobile: ";
     getline(cin, newUser.mobile);
 
-//    while (!ValidateMobile(newUser.mobile)){
+    while (!ValidateMobile(newUser.mobile)){
 
-    cout << "Error Message <-- Modify It" << endl;
+        cout << "\nInvalid mobile format, please try again" << endl;
+        cout << "Enter Mobile: ";
+        getline(cin, newUser.mobile);
 
-    cout << "Enter Mobile: ";
-    getline(cin, newUser.mobile);
-
-//    }
+    }
 
     //Opening Data Base File
     fstream file;
