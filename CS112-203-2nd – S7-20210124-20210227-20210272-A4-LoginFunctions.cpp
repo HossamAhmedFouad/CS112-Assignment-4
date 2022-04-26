@@ -125,10 +125,30 @@ bool ValidateUsername(string& username){
 bool ValidatePassword(string& password){
     //Default State
     bool correct = false;
-    
- 
- 
- 
+    bool upper_case{false},lower_case{false},digit{false},special_char{false},size{false};
+    int sum;
+    for(int i=0;i<password.size();i++){
+        if (password.size()>8){
+            size= true;
+            if (islower(password[i])){
+                lower_case= true;
+            }
+            if(isupper(password[i])){
+                upper_case= true;
+            }
+            if(isdigit(password[i])){
+                digit= true;
+            }
+            else {
+                special_char = true;
+            }
+        }
+
+    }
+    sum=upper_case+lower_case+digit+special_char+size;
+    if(sum==5){
+        correct=true;
+    }
     return correct;
 }
 
