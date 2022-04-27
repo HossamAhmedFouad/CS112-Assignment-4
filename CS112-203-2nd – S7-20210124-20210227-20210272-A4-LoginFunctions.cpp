@@ -240,7 +240,7 @@ void Register() {
     char x;
     int i = 0;
     while (true){
-        x = getch();
+        x = _getch();
         if (x== '\b' && i > 0){
             i--;
             pass[i] = ' ';
@@ -263,7 +263,7 @@ void Register() {
     char y;
     int j = 0;
     while (true){
-        y = getch();
+        y = _getch();
         if (y== '\b' && j > 0){
             j--;
             reentered_pass[i] = ' ';
