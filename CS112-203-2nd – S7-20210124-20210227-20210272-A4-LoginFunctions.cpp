@@ -10,10 +10,13 @@
 #include <bits/stdc++.h>
 #include <iostream>
 #include <regex>
+#include<conio.h>
+#include<cstdio>
 using namespace std;
 
 bool ValidateUsername(string& username);
 bool ValidatePassword(string& password);
+bool confirm_pass(const string& reentered_pass,const string& password);
 bool ValidateEmail(string& email);
 bool ValidateID(string& id);
 bool ValidateMobile(string& mobile);
@@ -152,6 +155,13 @@ bool ValidatePassword(string& password){
     return correct;
 }
 
+bool confirm_pass(const string& reentered_pass,const string& pass){
+    if(reentered_pass==pass){
+        return true;
+    }
+    return false;
+}
+
 bool ValidateEmail(string& email){
     
     regex validEmail("[^\\.]+[\\.]?[0-9A-Za-z.]*@[0-9A-Za-z]*[A-Za-z]+[0-9]*([A-Za-z0-9]+[\\-][A-Za-z0-9]+)?\\.[a-z]+");
@@ -215,26 +225,71 @@ void Register() {
     getline(cin, newUser.username);
 
 
-    while(!ValidateUsername(newUser.name)){
+    while(!ValidateUsername(newUser.username)){
         
         cout << "\nInvalid Username Format, please try again" << endl;
         cout << "Enter Username: ";
         getline(cin, newUser.username);
 
     }
-
     cout << endl;
-    cout << "Enter Password: ";
-    getline(cin, newUser.password);
-
-//    while (!ValidatePassword(newUser.password)){
-
-    cout << "Error Message <-- Modify It" << endl;
-
-    cout << "Enter Password: ";
-    getline(cin, newUser.password);
-
-//    }
+    cout<<"password must be not less than 8 characters,and contain at least one uppercase&lowercase&special character"<<endl;
+    char pass[100];
+    char reentered_pass[100];
+    cout<<"please,enter a new password:";
+    char x;
+    int i = 0;
+    while (true){
+        x = getch();
+        if (x== '\b' && i > 0){
+            i--;
+            pass[i] = ' ';
+            printf("\b \b");
+        }
+        else if (x == '\r'){
+            pass[i] = '\0';
+            cout << endl;
+            break;
+        }
+        else {
+            pass[i] = x;
+            i++;
+            cout << '*';
+        }
+    };
+    cout<<pass<<endl;
+    cout<<"please,enter password again:";
+//    cin >> reentered_pass;
+    char y;
+    int j = 0;
+    while (true){
+        y = getch();
+        if (y== '\b' && j > 0){
+            j--;
+            reentered_pass[i] = ' ';
+            printf("\b \b");
+        }
+        else if (y == '\r'){
+            reentered_pass[i] = '\0';
+            cout << endl;
+            break;
+        }
+        else {
+            reentered_pass[i] = y;
+            j++;
+            cout << '*';
+        }
+    };
+    cout<<reentered_pass<<endl;
+    while (!confirm_pass(reentered_pass, pass)){
+        cout<<"not the same,please enter same password:";
+        cin>>reentered_pass;
+    }
+    while(!ValidatePassword(reinterpret_cast<string &>(pass))){
+        cout<<"password is weak,please enter password again:";
+        cin >> pass;
+    }
+    newUser.password=pass;
 
     cout << endl;
     cout << "Enter ID: ";
