@@ -232,64 +232,48 @@ void Register() {
         getline(cin, newUser.username);
 
     }
+    void take_password(string& password){
+        char x;
+        int i = 0;
+        while (true){
+            x = _getch();
+            if (x== '\b' && i > 0){
+                i--;
+                password.pop_back();
+                printf("\b \b");
+            }
+            else if (x == '\r'){
+                cout << endl;
+                break;
+            }
+            else {
+                password.push_back(x);
+                i++;
+                cout << '*';
+            }
+        }
+    }
     cout << endl;
     cout<<"password must be not less than 8 characters,and contain at least one uppercase&lowercase&special character"<<endl;
-    char pass[100];
-    char reentered_pass[100];
+    string reentered_pass;
     cout<<"please,enter a new password:";
-    char x;
-    int i = 0;
-    while (true){
-        x = _getch();
-        if (x== '\b' && i > 0){
-            i--;
-            pass[i] = ' ';
-            printf("\b \b");
-        }
-        else if (x == '\r'){
-            pass[i] = '\0';
-            cout << endl;
-            break;
-        }
-        else {
-            pass[i] = x;
-            i++;
-            cout << '*';
-        }
-    };
-    cout<<pass<<endl;
+    take_password(newUser.password);
     cout<<"please,enter password again:";
-//    cin >> reentered_pass;
-    char y;
-    int j = 0;
-    while (true){
-        y = _getch();
-        if (y== '\b' && j > 0){
-            j--;
-            reentered_pass[i] = ' ';
-            printf("\b \b");
-        }
-        else if (y == '\r'){
-            reentered_pass[i] = '\0';
-            cout << endl;
-            break;
-        }
-        else {
-            reentered_pass[i] = y;
-            j++;
-            cout << '*';
-        }
-    };
-    cout<<reentered_pass<<endl;
-    while (!confirm_pass(reentered_pass, pass)){
+    take_password(reentered_pass);
+    while (!confirm_pass(reentered_pass, newUser.password)){
         cout<<"not the same,please enter same password:";
-        cin>>reentered_pass;
+        take_password(reentered_pass);
     }
-    while(!ValidatePassword(reinterpret_cast<string &>(pass))){
+    while(!ValidatePassword(newUser.password)){
         cout<<"password is weak,please enter password again:";
-        cin >> pass;
+        take_password(newUser.password);
+        cout<<"please,enter password again:";
+        take_password(reentered_pass);
+        while(!confirm_pass(reentered_pass,newUser.password)){
+            cout<<"not the same,please enter same password:";
+            take_password(reentered_pass);
+        }
     }
-    newUser.password=pass;
 
     cout << endl;
     cout << "Enter ID: ";
