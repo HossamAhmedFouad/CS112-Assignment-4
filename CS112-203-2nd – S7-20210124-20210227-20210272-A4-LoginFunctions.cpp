@@ -217,22 +217,7 @@ vector<string> WordReader(string& line){
 }
 
 //Main Registration Function
-
-void Register() {
-
-    User newUser;
-    cout << "Enter Username: ";
-    getline(cin, newUser.username);
-
-
-    while(!ValidateUsername(newUser.username)){
-        
-        cout << "\nInvalid Username Format, please try again" << endl;
-        cout << "Enter Username: ";
-        getline(cin, newUser.username);
-
-    }
-    void take_password(string& password){
+void take_password(string& password){
         char x;
         int i = 0;
         while (true){
@@ -253,6 +238,22 @@ void Register() {
             }
         }
     }
+
+void Register() {
+
+    User newUser;
+    cout << "Enter Username: ";
+    getline(cin, newUser.username);
+
+
+    while(!ValidateUsername(newUser.username)){
+        
+        cout << "\nInvalid Username Format, please try again" << endl;
+        cout << "Enter Username: ";
+        getline(cin, newUser.username);
+
+    }
+   
     cout << endl;
     cout<<"password must be not less than 8 characters,and contain at least one uppercase&lowercase&special character"<<endl;
     string reentered_pass;
