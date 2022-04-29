@@ -395,6 +395,66 @@ int Login(){
 /**
 * Change Password
 */
+void ChangePassword(){
+        string OldPass, NewPass, ReenteredNewPassword;
+        Login();
+        cout << "please enter your old password:";
+        take_password(OldPass);
+    while(OldPass!=users[indexuser-1].password){
+        cout<<"wrong password,please try again:";
+        take_password(OldPass);
+    }
+        cout << "enter new password";
+        take_password(NewPass);
+        users[indexuser].oldPasswords.push_back(OldPass);
+        users[indexuser].password = NewPass;
+        fstream file;
+        file.open("dataBase.txt", ios::in);
+        string currentLine{};
+        vector<string> words{};
+        fstream file_out;
+        file_out.open("modified.txt", ios::app);
+        while (getline(file, currentLine)) {
+            words = WordReader(currentLine);
+            if (words.size() > 0) {
+                if (words[1] == to_string(indexuser+1)) {
+                    file_out << currentLine << endl;
+                    getline(file, currentLine);
+                    file_out << currentLine << endl;
+                    getline(file, currentLine);
+                    currentLine = "    Password     : " + NewPass;
+                    file_out << currentLine << endl;
+                    getline(file, currentLine);
+                    file_out << currentLine << endl;
+                    getline(file, currentLine);
+                    file_out << currentLine << endl;
+                    getline(file, currentLine);
+                    file_out << currentLine << endl;
+                    getline(file, currentLine);
+                    for (int i = 0; i < OldPass.size(); i++) {
+                        currentLine.push_back(OldPass[i]);
+                    }
+                    currentLine.push_back(' ');
+                    file_out << currentLine << endl;
 
+                } else {
+                    file_out << currentLine << endl;
+                }
+            }
+        }
+        file.close();
+        file_out.close();
+        currentLine.clear();
+        file.open("dataBase.txt", ios::out);
+        file_out.open("modified.txt", ios::in);
+        while (getline(file_out, currentLine)) {
+            file << currentLine << endl;
+        }
+        file_out.close();
+        file.close();
+        file_out.open("modified.txt", ios::out);
+        file_out.close();
+
+}
 
 
