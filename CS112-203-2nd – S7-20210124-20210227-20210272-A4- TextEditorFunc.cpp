@@ -6,7 +6,16 @@
 // Author3 and ID and Group: Omar Mohamed 	    20210272
 // Teaching Assistant: xxxxx xxxxx
 // Purpose:Perform Text Edit On txt files
-
+#include <bits/stdc++.h>
+using namespace std;
+void merge(string &file);
+void numbersOfWords(string &file);
+void numberOfChar(string &file);
+void numberOfLines(string &file);
+void searchForWord(string &file);
+int main(){
+    
+}
 /* 
 word reader 
 */
