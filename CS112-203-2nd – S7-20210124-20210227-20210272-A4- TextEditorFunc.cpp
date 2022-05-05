@@ -6,3 +6,121 @@
 // Author3 and ID and Group: Omar Mohamed 	    20210272
 // Teaching Assistant: xxxxx xxxxx
 // Purpose:Perform Text Edit On txt files
+
+/* 
+word reader 
+*/
+vector<string> WordReader(string& line){
+    vector<string>words{};
+    string result{};
+    int i = 0;
+    while (i<line.size()){
+        while (!isspace(line[i]) && i<line.size()){
+            result.push_back(line[i]);
+            i++;
+        }
+        if(result.size()>0){
+            words.push_back(result);
+        }
+        result.clear();
+        i++;
+    }
+    return words;
+}
+/*
+functions
+*/
+void merge(string &file){
+    string anotherFile;
+    string currentLine{};
+    vector<string> words{};
+    cout<<"name of another file:";
+    cin>>anotherFile;
+    anotherFile+=".txt";
+    fstream myfile2,myfile;
+    myfile2.open(anotherFile,ios::in);
+    myfile.open(file, ios::app);
+    if(myfile2){
+        while(getline(myfile2,currentLine)){
+            words=WordReader(currentLine);
+            myfile<<" ";
+            for (int i=0;i<words.size();i++) {
+                myfile<<words[i];
+                myfile<<" ";
+            }
+        }
+    } else{
+        cout<<"invalid file name"<<endl;
+    }
+}
+
+void numbersOfWords(string &file){
+    int wordSize{0};
+    string currentLine{};
+    vector<string> words{};
+    fstream myfile;
+    myfile.open(file,ios::in);
+        while (getline(myfile,currentLine)){
+            words= WordReader(currentLine);
+            wordSize+=words.size();
+        }
+    cout<<wordSize<<endl;
+}
+
+void numberOfChar(string &file){
+    int charSize{0};
+    string currentLine{};
+    vector<string> words{};
+    fstream myfile;
+    myfile.open(file,ios::in);
+    while (getline(myfile,currentLine)){
+        words= WordReader(currentLine);
+        if(words.size()>0){
+            charSize+=currentLine.size();
+        }
+    }
+    cout<<charSize<<endl;
+}
+
+void numberOfLines(string &file){
+    int lineSize{0};
+    string currentLine{};
+    vector<string> words{};
+    fstream myfile;
+    myfile.open(file,ios::in);
+    while (getline(myfile,currentLine)){
+        words= WordReader(currentLine);
+        if(words.size()>0){
+            lineSize+=1;
+        }
+
+    }
+    cout<<lineSize<<endl;
+}
+
+void searchForWord(string &file){
+    bool found= false;
+    string word;
+    cout<<"enter a word:";
+    cin>>word;
+    transform(word.begin(),word.end(),word.begin(),::tolower);
+    string currentLine{};
+    vector<string> words{};
+    fstream myfile;
+    myfile.open(file,ios::in);
+    while (getline(myfile,currentLine)) {
+        words = WordReader(currentLine);
+        for(int i=0;i<words.size();i++){
+            transform(words[i].begin(),words[i].end(),words[i].begin(),::tolower);
+            if(words[i]==word){
+                found= true;
+            }
+        }
+    }
+    if(found){
+        cout<<"Word was found in the file"<<endl;
+    } else{
+        cout<<"Word was not found in the file"<<endl;
+    }
+
+}
