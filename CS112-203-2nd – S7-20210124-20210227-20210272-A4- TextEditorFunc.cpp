@@ -410,6 +410,112 @@ void searchForWord(string &file){
             }
         }
     }
+    void CountOccurences(string fileName, string key);
+void TurnUpper(string fileName);
+void TurnLower(string fileName);
+void FirstCaps(string fileName);
+void Save(string fileName);
+
+
+void CountOuccurences(string fileName, string key){
+    fstream file;
+    file.open(fileName,ios::in);
+    string line{};
+    vector<string>words{};
+    int count = 0;
+    while (getline(file,line)){
+        words = WordReader(line);
+        for(string word: words){
+            if(word == key){
+                count++;
+            }
+        }
+    }
+    file.close();
+    cout<<"Number of occurences: " << count<<endl;
+}
+
+void TurnUpper(string fileName){
+    fstream file;
+    file.open(fileName,ios::in);
+    string line{};
+    vector<vector<string>>data{};
+    while (getline(file,line)){
+        data.push_back(DataReader(line));
+    }
+    file.close();
+    file.open(fileName, ios::out);
+    string word{};
+    for (int i = 0; i < data.size(); ++i) {
+        for (int j = 0; j <data[i].size() ; ++j) {
+            for (int k = 0; k <data[i][j].size(); ++k) {
+                word.push_back(toupper(data[i][j][k]));
+            }
+            file<<word;
+            word.clear();
+        }
+        file<<endl;
+    }
+    file.close();
+}
+void TurnLower(string fileName){
+    fstream file;
+    file.open(fileName,ios::in);
+    string line{};
+    vector<vector<string>>data{};
+    while (getline(file,line)){
+        data.push_back(DataReader(line));
+    }
+    file.close();
+    file.open(fileName, ios::out);
+    string word{};
+    for (int i = 0; i < data.size(); ++i) {
+        for (int j = 0; j <data[i].size() ; ++j) {
+            for (int k = 0; k <data[i][j].size(); ++k) {
+                word.push_back(tolower(data[i][j][k]));
+            }
+            file<<word;
+            word.clear();
+        }
+        file<<endl;
+    }
+    file.close();
+}
+void FirstCaps(string fileName){
+    fstream file;
+    file.open(fileName,ios::in);
+    string line{};
+    vector<vector<string>>data{};
+    while (getline(file,line)){
+        data.push_back(DataReader(line));
+    }
+    file.close();
+    file.open(fileName, ios::out);
+    string word{};
+    for (int i = 0; i < data.size(); ++i) {
+        for (int j = 0; j <data[i].size() ; ++j) {
+            data[i][j][0]=toupper(data[i][j][0]);
+            file<<data[i][j];
+        }
+        file<<endl;
+    }
+    file.close();
+}
+void Save(string fileName){
+    string line{};
+    string data{};
+    fstream file;
+    file.open(fileName,ios::in);
+    while (getline(file,line)){data+=line;}
+    file.close();
+    string name;
+    cout<<"Please Enter Output file name: ";
+    cin>>name;
+    name+=".txt";
+    file.open(name,ios::out);
+    file<<data;
+    file.close();
+}
     if(found){
         cout<<"Word was found in the file"<<endl;
     } else{
