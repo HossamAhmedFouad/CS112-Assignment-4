@@ -6,15 +6,11 @@
 // Author3 and ID and Group: Omar Mohamed       20210272
 // Teaching Assistant: Eng. Abdelrahman
 // Purpose:Creating A Full Functioning Data Base System
-
 #include <iostream>
 #include <regex>
 #include <fstream>
 #include <conio.h>
-#include <cstdlib>
-
 using namespace std;
-
 bool ValidateUsername(string& username);
 bool ValidatePassword(string& password);
 bool ValidateEmail(string& email);
@@ -25,11 +21,11 @@ pair<int,bool> ValidateLogin(string& id, string& pass);
 void LoadDataBase();
 void TakePassword(string& holder);
 vector<string>WordReader(string& line);
-vector<string>DataBaseReader(string& line);
 void Register();
 int Login();
 void ChangePassword();
 string RailFenceEncryption(string& text);
+string RailFenceDecryption(string& text);
 struct User{
 
     string username{},email{},password{},id{},mobile{};
@@ -38,8 +34,6 @@ struct User{
 };
 
 vector<User>users{};
-vector<vector<string>>dataBaseText{};
-
 ostream& operator<<(ostream& out , vector<string>&data){
     out<<"[";
     for (string& word : data) {
@@ -55,7 +49,11 @@ ostream& operator<<(ostream& out, vector<User>&data){
     }
     return out;
 }
-
+int main(){
+    LoadDataBase();
+    ChangePassword();
+    return 0;
+}
 string RailFenceEncryption(string& text){
     string result{};
     int key = 4;
@@ -97,6 +95,76 @@ string RailFenceEncryption(string& text){
         return result;
     }
 }
+string RailFenceDecryption(string& text) {
+    int key = 4;
+    vector<vector<char>>matrix(key,vector<char>(text.size(),0));
+    vector<vector<char>>v_rows;
+    vector<char>v_row;
+    string result = "";
+    bool skip_one_turn;
+    bool skip_two_turn;
+    if(key > text.length()){
+        result = text;
+        return result;
+    } else {
+        int factor{0};
+        factor = key > 2 ? 2 * key - 3 : 1;
+        int skip1{0}, skip2{0}, start{0}, fixed_start{0}, counter{0};
+        for (int row = 1; row <= key; row++) {
+            v_row.clear();
+            skip_one_turn = true;
+            skip_two_turn = false;
+            skip1 = key > 2 ? factor - 2 * (row < key ? row - 1 : 0) : 1;
+            skip2 = ((key > 2) && (skip1 < factor)) ? (factor - 1 - skip1) : 0;
+            fixed_start = row - 1;
+            v_row.push_back(text[start]);
+            matrix[row-1][fixed_start] = text[start];
+            counter = 0;
+            while (fixed_start < text.length()) {
+                if ((fixed_start + skip1 + 1) < text.length() && skip_one_turn) {
+                    counter++;
+                    fixed_start += skip1 + 1;
+                    matrix[row-1][fixed_start] = text[start+counter];
+                    if (skip2 != 0) {
+                        skip_one_turn = !skip_one_turn;
+                    }
+                    skip_two_turn = !skip_two_turn;
+                } else if ((fixed_start + skip2 + 1) < text.length() && skip2 != 0 && skip_two_turn) {
+                    counter++;
+                    fixed_start += skip2 + 1;
+                    matrix[row-1][fixed_start]= text[start+counter];
+                    skip_one_turn = !skip_one_turn;
+                    skip_two_turn = !skip_two_turn;
+                } else {
+                    for(int i =start+1;i<=start+counter;i++){
+                        v_row.push_back(text[i]);
+                    }
+                    v_rows.push_back(v_row);
+                    start += counter + 1;
+                    break;
+                }
+            }
+        }
+        int x_begin = 0;
+        int y_begin = 0;
+        int x_speed = 1;
+        int y_speed = 1;
+        while (x_begin<matrix[y_begin].size()){
+            result += matrix[y_begin][x_begin];
+            if(y_begin + y_speed > matrix.size()-1){
+                y_speed *= -1;
+            }
+            if(y_begin + y_speed < 0){
+                y_speed *=-1;
+            }
+            y_begin+=y_speed;
+            x_begin+=x_speed;
+        }
+
+        return result;
+    }
+
+}
 /**
  * Load Data Base Users
  */
@@ -119,37 +187,37 @@ void LoadDataBase() {
                     for (int i = 2; i < words.size(); ++i) {
                         result += words[i];
                     }
-                    users[users.size()-1].username = result;
+                    users[users.size()-1].username = RailFenceDecryption(result);
                     result.clear();
                 } else if (words[0] == "Password") {
                     for (int i = 2; i < words.size(); ++i) {
                         result += words[i];
                     }
-                    users[users.size()-1].password = result;
+                    users[users.size()-1].password = RailFenceDecryption(result);
                     result.clear();
                 }else if(words[0]=="ID"){
 
                     for (int i = 2; i < words.size(); ++i) {
                         result += words[i];
                     }
-                    users[users.size()-1].id = result;
+                    users[users.size()-1].id = RailFenceDecryption(result);
                     result.clear();
 
                 }else if (words[0] == "Email") {
                     for (int i = 2; i < words.size(); ++i) {
                         result += words[i];
                     }
-                    users[users.size()-1].email = result;
+                    users[users.size()-1].email = RailFenceDecryption(result);
                     result.clear();
                 } else if (words[0] == "Mobile") {
                     for (int i = 2; i < words.size(); ++i) {
                         result += words[i];
                     }
-                    users[users.size()-1].mobile = result;
+                    users[users.size()-1].mobile = RailFenceDecryption(result);
                     result.clear();
                 } else if (words[0] == "Old") {
                     for (int i = 2; i < words.size(); ++i) {
-                        users[users.size()-1].oldPasswords.push_back(words[i]);
+                        users[users.size()-1].oldPasswords.push_back(RailFenceDecryption(words[i]) );
                     }
                 }
 
@@ -234,45 +302,6 @@ bool ValidateMobile(string& mobile){
 
     return regex_match(mobile,validMobile);
 }
-
-vector<string>DataBaseReader(string& line){
-    vector<string>data{};
-    string word{};
-    int i=0;
-    while (i<line.size()){
-        if (!isdigit(line[i]) && !isalpha(line[i])&& !isspace(line[i])){
-            word.push_back(line[i]);
-            data.push_back(word);
-            word.clear();
-            i++;
-        } else if(isspace(line[i])){
-            while (isspace(line[i])){
-                word.push_back(line[i]);
-                i++;
-            }
-            data.push_back(word);
-            word.clear();
-        }else if(isalpha(line[i])){
-            while (isalpha(line[i])) {
-                word.push_back(line[i]);
-                i++;
-            }
-            data.push_back(word);
-            word.clear();
-        }else if(isdigit(line[i])){
-            while (isdigit(line[i])){
-                word.push_back(line[i]);
-                i++;
-            }
-            data.push_back(word);
-            word.clear();
-        }else{
-
-        }
-    }
-    return data;
-}
-
 vector<string> WordReader(string& line){
     vector<string>words{};
     string result{};
@@ -315,7 +344,6 @@ void TakePassword(string& holder){
 
 //Main Registration Function
 void Register() {
-
     User newUser;
     cout << "Enter Username: ";
     getline(cin, newUser.username);
@@ -364,9 +392,9 @@ void Register() {
 
     while (!ValidateID(newUser.id)){
 
-    cout << "Enter ID: ";
+        cout << "Enter ID: ";
 
-    getline(cin, newUser.id);
+        getline(cin, newUser.id);
 
     }
 
@@ -399,30 +427,30 @@ void Register() {
 
     //Opening Data Base File
     fstream file;
-    file.open("dataBase.txt", ios::app);
+    file.open("dataBase.txt", ios::out);
 
     //Registering user to data base
-    newUser.password = RailFenceEncryption(newUser.password);
     users.push_back(newUser);
     cout<<endl;
 
-    if (file.is_open()) {
-        file << "USER " << users.size() << "\n";
-        file << "    Username     : " << newUser.username << "\n";
-        file << "    Password     : " << newUser.password << "\n";
-        file << "    ID           : " << newUser.id << "\n";
-        file << "    Email        : " << newUser.email << "\n";
-        file << "    Mobile       : " << newUser.mobile << "\n";
+    for(int i=0;i<users.size();i++){
+        file << "USER " << i+1 << "\n";
+        file << "    Username     : " << RailFenceEncryption(users[i].username) << "\n";
+        file << "    Password     : " << RailFenceEncryption(users[i].password) << "\n";
+        file << "    ID           : " << RailFenceEncryption(users[i].id) << "\n";
+        file << "    Email        : " << RailFenceEncryption(users[i].email) << "\n";
+        file << "    Mobile       : " << RailFenceEncryption(users[i].mobile) << "\n";
         file << "    Old Passwords:";
-        for (int i = 0; i <newUser.oldPasswords.size(); ++i) {
+        for (int j = 0; j <users[i].oldPasswords.size(); ++j) {
             //ADD ENCRYPTION HERE
-            file<<newUser.oldPasswords[i]<<" ";
+            file<<RailFenceDecryption(users[i].oldPasswords[j])<<" ";
         }
 
         file<<endl;
         file<<endl;
-        file.close();
+
     }
+    file.close();
 }
 
 /**
@@ -435,12 +463,9 @@ pair<int,bool>ValidateLogin(string& id, string& pass) {
     result.first = counter;
     for (User &user: users) {
         counter++;
-        if (user.id == id) {
+        if (user.id ==id) {
             foundID = true;
-            cout<<user.password<<endl;
-            cout<<pass<<endl;
-            cout<<RailFenceEncryption(pass)<<endl;
-            if (user.password == RailFenceEncryption(pass)) {
+            if (user.password == pass) {
                 correctPass = true;
                 result.first = counter;
                 result.second = foundID && correctPass;
@@ -453,7 +478,7 @@ pair<int,bool>ValidateLogin(string& id, string& pass) {
 
 bool UniquePassword(string& pass, const vector<string>&data){
     for(const string& d : data){
-        if(d == RailFenceEncryption(pass)){
+        if(d == pass){
             cout<<"Already used password, choose a new one"<<endl;
             return false;
         }
@@ -492,103 +517,34 @@ int Login(){
 * Change Password
 */
 void ChangePassword(){
-    string passCheck{};
     int indexUser = Login();
-    if(indexUser>-1) {
-        users[indexUser].oldPasswords.push_back(users[indexUser].password);
-        cout << "Enter new password: ";
-        TakePassword(users[indexUser].password);
-        while (!UniquePassword(users[indexUser].password, users[indexUser].oldPasswords)) {
-            cout << "\nPassword already used, please choose a new one" << endl;
-            cout << "Enter new password: ";
-            TakePassword(users[indexUser].password);
-        }
-        cout << "Re-enter password: ";
-        TakePassword(passCheck);
-        cout << endl;
-        while (passCheck != users[indexUser].password) {
-            cout << "\nRe-entered password is not identical to first password please try again" << endl;
-            cout << "Enter password: ";
-            TakePassword(users[indexUser].password);
-            while (!UniquePassword(users[indexUser].password, users[indexUser].oldPasswords)) {
-                cout << "\nPassword already used, please choose a new one" << endl;
-                cout << "Enter new password: ";
-                TakePassword(users[indexUser].password);
-            }
-            cout << "Re-enter password: ";
-            TakePassword(passCheck);
-        }
-        while (!ValidatePassword(users[indexUser].password)) {
-            cout << "Enter new password: ";
-            TakePassword(users[indexUser].password);
-            cout << "Re-enter password: ";
-            TakePassword(passCheck);
-            while (passCheck != users[indexUser].password) {
-                cout << "\nRe-entered password is not identical to first password please try again" << endl;
-                cout << "Enter password: ";
-                TakePassword(users[indexUser].password);
-                while (!UniquePassword(users[indexUser].password, users[indexUser].oldPasswords)) {
-                    cout << "\nPassword already used, please choose a new one" << endl;
-                    cout << "Enter new password: ";
-                    TakePassword(users[indexUser].password);
-                }
-                cout << "Re-enter password: ";
-                TakePassword(passCheck);
-            }
-        }
-        users[indexUser].password = RailFenceEncryption(users[indexUser].password);
-        fstream file;
-        file.open("dataBase.txt",ios::in);
-        if(file.is_open()){
-            string line{};
-            vector<string>data{};
-            dataBaseText.clear();
-            while (getline(file,line)){
-                data = DataBaseReader(line);
-                dataBaseText.push_back(data);
-            }
-            file.close();
-        }
-        file.open("dataBase.txt", ios::out);
-        string line{};
-        vector<string> words{};
-        if (file.is_open()) {
-            for (int i = 0; i < dataBaseText.size(); ++i) {
-                for (int j = 0; j < dataBaseText[i].size(); ++j) {
-                    if (dataBaseText[i][j] == "USER") {
-                        if (stoi(dataBaseText[i][j + 2]) == indexUser + 1) {
-                            i += 2;
-                            j += 5;
-                            cout<<dataBaseText[i]<<endl;
-                            cout<<dataBaseText[i][j]<<endl;
-                            //string out{};
-                            int remove = dataBaseText[i].size();
-                            for (int x = j; x <remove; x++) {
-                               cout<<dataBaseText[i]<<endl;
-                               dataBaseText[i].pop_back();
-                               cout<<dataBaseText[i]<<endl;
-                            }
-                            dataBaseText[i].push_back(users[indexUser].password);
-                            i += 4;
-                            dataBaseText[i].push_back(" ");
-                            dataBaseText[i].push_back(users[indexUser].oldPasswords[users[indexUser].oldPasswords.size() - 1]);
-                            break;
-                        }
-                    }
-                }
-            }
-            for (int i = 0; i < dataBaseText.size(); ++i) {
-                for (int j = 0; j < dataBaseText[i].size(); ++j) {
-                    file << dataBaseText[i][j];
-                }
-                file << endl;
-            }
-
-            file.close();
-        }
-
-        cout << "\nPassword has successfully changed!" << endl;
+    string OldPass, NewPass, ReenteredNewPassword;
+    cout << "please enter your old password:";
+    TakePassword(OldPass);
+    while(OldPass!=users[indexUser].password){
+        cout<<"wrong password,please try again:";
+        TakePassword(OldPass);
     }
+    cout << "enter new password";
+    TakePassword(NewPass);
+    users[indexUser].oldPasswords.push_back(OldPass);
+    users[indexUser].password = NewPass;
+    fstream file;
+    file.open("dataBase.txt", ios::out);
+    for(int i=0;i<users.size();i++){
+        file << "USER " << i+1 << "\n";
+        file << "    Username     : " << RailFenceEncryption(users[i].username) << "\n";
+        file << "    Password     : " << RailFenceEncryption(users[i].password) << "\n";
+        file << "    ID           : " << RailFenceEncryption(users[i].id) << "\n";
+        file << "    Email        : " << RailFenceEncryption(users[i].email) << "\n";
+        file << "    Mobile       : " << RailFenceEncryption(users[i].mobile) << "\n";
+        file << "    Old Passwords:";
+        for (int j = 0; j <users[i].oldPasswords.size(); ++j) {
+            //ADD ENCRYPTION HERE
+            file<<users[i].oldPasswords[j]<<" ";
+        }
+        file<<endl;
+        file<<endl;
+    }
+    file.close();
 }
-
-
