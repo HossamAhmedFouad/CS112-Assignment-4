@@ -1,2 +1,3 @@
-# CS112-Assignment-4
-This is a repository for FCAI-CU team members working on CS112 Assignment 3 project
+# Simple Encryption Decryption System
+
+* This is a simple program that encrypts and decrypts text files using Rail Fence Encryption
